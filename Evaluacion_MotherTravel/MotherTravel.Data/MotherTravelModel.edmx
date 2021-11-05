@@ -1,0 +1,406 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="FACTURA_EJEMPLOModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Detalle">
+          <Key>
+            <PropertyRef Name="idDetalle" />
+            <PropertyRef Name="idFactura" />
+          </Key>
+          <Property Name="idDetalle" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="idFactura" Type="int" Nullable="false" />
+          <Property Name="idProducto" Type="int" Nullable="false" />
+          <Property Name="cantidad" Type="int" Nullable="false" />
+          <Property Name="precio" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Factura">
+          <Key>
+            <PropertyRef Name="idFactura" />
+          </Key>
+          <Property Name="idFactura" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="idEmisor" Type="int" Nullable="false" />
+          <Property Name="idReceptor" Type="int" Nullable="false" />
+          <Property Name="fecha" Type="date" Nullable="false" />
+          <Property Name="facturaXML" Type="xml" />
+        </EntityType>
+        <EntityType Name="PersonaFiscal">
+          <Key>
+            <PropertyRef Name="idPersona" />
+          </Key>
+          <Property Name="idPersona" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="nombre" Type="varchar" MaxLength="30" />
+          <Property Name="apellido" Type="varchar" MaxLength="30" />
+          <Property Name="rfc" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="razon_social" Type="varchar" MaxLength="30" />
+          <Property Name="direccion" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="fecha_nacimiento" Type="varchar" MaxLength="30" />
+          <Property Name="telefono" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="email" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="categoria" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="tipo_persona" Type="varchar" MaxLength="10" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Producto">
+          <Key>
+            <PropertyRef Name="idProducto" />
+          </Key>
+          <Property Name="idProducto" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="nombre" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="precio" Type="decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="stock" Type="int" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_idEmisor">
+          <End Role="PersonaFiscal" Type="Self.PersonaFiscal" Multiplicity="1" />
+          <End Role="Factura" Type="Self.Factura" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PersonaFiscal">
+              <PropertyRef Name="idPersona" />
+            </Principal>
+            <Dependent Role="Factura">
+              <PropertyRef Name="idEmisor" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_idProducto">
+          <End Role="Producto" Type="Self.Producto" Multiplicity="1" />
+          <End Role="Detalle" Type="Self.Detalle" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Producto">
+              <PropertyRef Name="idProducto" />
+            </Principal>
+            <Dependent Role="Detalle">
+              <PropertyRef Name="idProducto" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_idReceptor">
+          <End Role="PersonaFiscal" Type="Self.PersonaFiscal" Multiplicity="1" />
+          <End Role="Factura" Type="Self.Factura" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PersonaFiscal">
+              <PropertyRef Name="idPersona" />
+            </Principal>
+            <Dependent Role="Factura">
+              <PropertyRef Name="idReceptor" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="sp_ActualizaFactura" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="idFactura" Type="int" Mode="In" />
+          <Parameter Name="idEmisor" Type="int" Mode="In" />
+          <Parameter Name="idReceptor" Type="int" Mode="In" />
+          <Parameter Name="idProducto" Type="int" Mode="In" />
+          <Parameter Name="cantidad" Type="int" Mode="In" />
+          <Parameter Name="precio" Type="decimal" Mode="In" />
+        </Function>
+        <Function Name="sp_AgregarFactura" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="idEmisor" Type="int" Mode="In" />
+          <Parameter Name="idReceptor" Type="int" Mode="In" />
+          <Parameter Name="idProducto" Type="int" Mode="In" />
+          <Parameter Name="cantidad" Type="int" Mode="In" />
+          <Parameter Name="precio" Type="decimal" Mode="In" />
+        </Function>
+        <Function Name="sp_EliminaFactura" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="idFactura" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_InsertFactura" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="idEmisor" Type="int" Mode="In" />
+          <Parameter Name="idReceptor" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_InsertPersonaFiscal" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="nombre" Type="varchar" Mode="In" />
+          <Parameter Name="apellido" Type="varchar" Mode="In" />
+          <Parameter Name="rfc" Type="varchar" Mode="In" />
+          <Parameter Name="razon_social" Type="varchar" Mode="In" />
+          <Parameter Name="direccion" Type="varchar" Mode="In" />
+          <Parameter Name="fecha_nacimiento" Type="varchar" Mode="In" />
+          <Parameter Name="telefono" Type="varchar" Mode="In" />
+          <Parameter Name="email" Type="varchar" Mode="In" />
+          <Parameter Name="categoria" Type="varchar" Mode="In" />
+          <Parameter Name="tipo_persona" Type="varchar" Mode="In" />
+        </Function>
+        <EntityContainer Name="FACTURA_EJEMPLOModelStoreContainer">
+          <EntitySet Name="Detalle" EntityType="Self.Detalle" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Factura" EntityType="Self.Factura" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PersonaFiscal" EntityType="Self.PersonaFiscal" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Producto" EntityType="Self.Producto" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_idEmisor" Association="Self.FK_idEmisor">
+            <End Role="PersonaFiscal" EntitySet="PersonaFiscal" />
+            <End Role="Factura" EntitySet="Factura" />
+          </AssociationSet>
+          <AssociationSet Name="FK_idProducto" Association="Self.FK_idProducto">
+            <End Role="Producto" EntitySet="Producto" />
+            <End Role="Detalle" EntitySet="Detalle" />
+          </AssociationSet>
+          <AssociationSet Name="FK_idReceptor" Association="Self.FK_idReceptor">
+            <End Role="PersonaFiscal" EntitySet="PersonaFiscal" />
+            <End Role="Factura" EntitySet="Factura" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="FACTURA_EJEMPLOModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Detalle">
+          <Key>
+            <PropertyRef Name="idDetalle" />
+            <PropertyRef Name="idFactura" />
+          </Key>
+          <Property Name="idDetalle" Type="Int32" Nullable="false" />
+          <Property Name="idFactura" Type="Int32" Nullable="false" />
+          <Property Name="idProducto" Type="Int32" Nullable="false" />
+          <Property Name="cantidad" Type="Int32" Nullable="false" />
+          <Property Name="precio" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <NavigationProperty Name="Producto" Relationship="Self.FK_idProducto" FromRole="Detalle" ToRole="Producto" />
+        </EntityType>
+        <EntityType Name="Factura">
+          <Key>
+            <PropertyRef Name="idFactura" />
+          </Key>
+          <Property Name="idFactura" Type="Int32" Nullable="false" />
+          <Property Name="idEmisor" Type="Int32" Nullable="false" />
+          <Property Name="idReceptor" Type="Int32" Nullable="false" />
+          <Property Name="fecha" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="facturaXML" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="PersonaFiscal" Relationship="Self.FK_idEmisor" FromRole="Factura" ToRole="PersonaFiscal" />
+          <NavigationProperty Name="PersonaFiscal1" Relationship="Self.FK_idReceptor" FromRole="Factura" ToRole="PersonaFiscal" />
+        </EntityType>
+        <EntityType Name="PersonaFiscal">
+          <Key>
+            <PropertyRef Name="idPersona" />
+          </Key>
+          <Property Name="idPersona" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="nombre" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="apellido" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="rfc" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="razon_social" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="direccion" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="fecha_nacimiento" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="telefono" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="email" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="categoria" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="tipo_persona" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Factura" Relationship="Self.FK_idEmisor" FromRole="PersonaFiscal" ToRole="Factura" />
+          <NavigationProperty Name="Factura1" Relationship="Self.FK_idReceptor" FromRole="PersonaFiscal" ToRole="Factura" />
+        </EntityType>
+        <EntityType Name="Producto">
+          <Key>
+            <PropertyRef Name="idProducto" />
+          </Key>
+          <Property Name="idProducto" Type="Int32" Nullable="false" />
+          <Property Name="nombre" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="precio" Type="Decimal" Precision="18" Scale="0" Nullable="false" />
+          <Property Name="stock" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Detalle" Relationship="Self.FK_idProducto" FromRole="Producto" ToRole="Detalle" />
+        </EntityType>
+        <Association Name="FK_idProducto">
+          <End Role="Producto" Type="Self.Producto" Multiplicity="1" />
+          <End Role="Detalle" Type="Self.Detalle" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Producto">
+              <PropertyRef Name="idProducto" />
+            </Principal>
+            <Dependent Role="Detalle">
+              <PropertyRef Name="idProducto" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_idEmisor">
+          <End Role="PersonaFiscal" Type="Self.PersonaFiscal" Multiplicity="1" />
+          <End Role="Factura" Type="Self.Factura" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PersonaFiscal">
+              <PropertyRef Name="idPersona" />
+            </Principal>
+            <Dependent Role="Factura">
+              <PropertyRef Name="idEmisor" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_idReceptor">
+          <End Role="PersonaFiscal" Type="Self.PersonaFiscal" Multiplicity="1" />
+          <End Role="Factura" Type="Self.Factura" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PersonaFiscal">
+              <PropertyRef Name="idPersona" />
+            </Principal>
+            <Dependent Role="Factura">
+              <PropertyRef Name="idReceptor" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="MotherTravelEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Detalle" EntityType="Self.Detalle" />
+          <EntitySet Name="Factura" EntityType="Self.Factura" />
+          <EntitySet Name="PersonaFiscal" EntityType="Self.PersonaFiscal" />
+          <EntitySet Name="Producto" EntityType="Self.Producto" />
+          <AssociationSet Name="FK_idProducto" Association="Self.FK_idProducto">
+            <End Role="Producto" EntitySet="Producto" />
+            <End Role="Detalle" EntitySet="Detalle" />
+          </AssociationSet>
+          <AssociationSet Name="FK_idEmisor" Association="Self.FK_idEmisor">
+            <End Role="PersonaFiscal" EntitySet="PersonaFiscal" />
+            <End Role="Factura" EntitySet="Factura" />
+          </AssociationSet>
+          <AssociationSet Name="FK_idReceptor" Association="Self.FK_idReceptor">
+            <End Role="PersonaFiscal" EntitySet="PersonaFiscal" />
+            <End Role="Factura" EntitySet="Factura" />
+          </AssociationSet>
+          <FunctionImport Name="sp_InsertPersonaFiscal" ReturnType="Collection(FACTURA_EJEMPLOModel.sp_InsertPersonaFiscal_Result)">
+            <Parameter Name="nombre" Mode="In" Type="String" />
+            <Parameter Name="apellido" Mode="In" Type="String" />
+            <Parameter Name="rfc" Mode="In" Type="String" />
+            <Parameter Name="razon_social" Mode="In" Type="String" />
+            <Parameter Name="direccion" Mode="In" Type="String" />
+            <Parameter Name="fecha_nacimiento" Mode="In" Type="String" />
+            <Parameter Name="telefono" Mode="In" Type="String" />
+            <Parameter Name="email" Mode="In" Type="String" />
+            <Parameter Name="categoria" Mode="In" Type="String" />
+            <Parameter Name="tipo_persona" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_DeleteFactura" ReturnType="Collection(FACTURA_EJEMPLOModel.sp_DeleteFactura_Result)">
+          <Parameter Name="idFactura" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_InsertFactura" ReturnType="Collection(FACTURA_EJEMPLOModel.sp_InsertFactura_Result)">
+            <Parameter Name="idEmisor" Mode="In" Type="Int32" />
+            <Parameter Name="idReceptor" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_UpdateFactura" ReturnType="Collection(FACTURA_EJEMPLOModel.sp_UpdateFactura_Result)">
+            <Parameter Name="idFactura" Mode="In" Type="Int32" />
+            <Parameter Name="idEmisor" Mode="In" Type="Int32" />
+            <Parameter Name="idReceptor" Mode="In" Type="Int32" />
+            <Parameter Name="fecha" Mode="In" Type="DateTime" />
+            <Parameter Name="facturaXML" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_InsertFactura1" ReturnType="Collection(Int32)">
+            <Parameter Name="idEmisor" Mode="In" Type="Int32" />
+            <Parameter Name="idReceptor" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_AgregarFactura" ReturnType="Collection(Int32)">
+            <Parameter Name="idEmisor" Mode="In" Type="Int32" />
+            <Parameter Name="idReceptor" Mode="In" Type="Int32" />
+            <Parameter Name="idProducto" Mode="In" Type="Int32" />
+            <Parameter Name="cantidad" Mode="In" Type="Int32" />
+            <Parameter Name="precio" Mode="In" Type="Decimal" />
+          </FunctionImport>
+          <FunctionImport Name="sp_ActualizaFactura" ReturnType="Collection(Int32)">
+            <Parameter Name="idFactura" Mode="In" Type="Int32" />
+            <Parameter Name="idEmisor" Mode="In" Type="Int32" />
+            <Parameter Name="idReceptor" Mode="In" Type="Int32" />
+            <Parameter Name="idProducto" Mode="In" Type="Int32" />
+            <Parameter Name="cantidad" Mode="In" Type="Int32" />
+            <Parameter Name="precio" Mode="In" Type="Decimal" />
+          </FunctionImport>
+          <FunctionImport Name="sp_EliminaFactura" ReturnType="Collection(Int32)">
+          <Parameter Name="idFactura" Mode="In" Type="Int32" />
+          </FunctionImport>
+        </EntityContainer>
+        <ComplexType Name="sp_InsertPersonaFiscal_Result">
+          <Property Type="Int32" Name="NumeroError" Nullable="true" />
+          <Property Type="String" Name="Mensaje" Nullable="true" MaxLength="4000" />
+        </ComplexType>
+        <ComplexType Name="sp_DeleteFactura_Result">
+          <Property Type="Int32" Name="NumeroError" Nullable="true" />
+          <Property Type="String" Name="Mensaje" Nullable="true" MaxLength="4000" />
+        </ComplexType>
+        <ComplexType Name="sp_InsertFactura_Result">
+          <Property Type="Int32" Name="NumeroError" Nullable="true" />
+          <Property Type="String" Name="Mensaje" Nullable="true" MaxLength="4000" />
+        </ComplexType>
+        <ComplexType Name="sp_UpdateFactura_Result">
+          <Property Type="Int32" Name="NumeroError" Nullable="true" />
+          <Property Type="String" Name="Mensaje" Nullable="true" MaxLength="4000" />
+        </ComplexType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="FACTURA_EJEMPLOModelStoreContainer" CdmEntityContainer="MotherTravelEntities">
+          <EntitySetMapping Name="Detalle">
+            <EntityTypeMapping TypeName="FACTURA_EJEMPLOModel.Detalle">
+              <MappingFragment StoreEntitySet="Detalle">
+                <ScalarProperty Name="idDetalle" ColumnName="idDetalle" />
+                <ScalarProperty Name="idFactura" ColumnName="idFactura" />
+                <ScalarProperty Name="idProducto" ColumnName="idProducto" />
+                <ScalarProperty Name="cantidad" ColumnName="cantidad" />
+                <ScalarProperty Name="precio" ColumnName="precio" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Factura">
+            <EntityTypeMapping TypeName="FACTURA_EJEMPLOModel.Factura">
+              <MappingFragment StoreEntitySet="Factura">
+                <ScalarProperty Name="idFactura" ColumnName="idFactura" />
+                <ScalarProperty Name="idEmisor" ColumnName="idEmisor" />
+                <ScalarProperty Name="idReceptor" ColumnName="idReceptor" />
+                <ScalarProperty Name="fecha" ColumnName="fecha" />
+                <ScalarProperty Name="facturaXML" ColumnName="facturaXML" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PersonaFiscal">
+            <EntityTypeMapping TypeName="FACTURA_EJEMPLOModel.PersonaFiscal">
+              <MappingFragment StoreEntitySet="PersonaFiscal">
+                <ScalarProperty Name="idPersona" ColumnName="idPersona" />
+                <ScalarProperty Name="nombre" ColumnName="nombre" />
+                <ScalarProperty Name="apellido" ColumnName="apellido" />
+                <ScalarProperty Name="rfc" ColumnName="rfc" />
+                <ScalarProperty Name="razon_social" ColumnName="razon_social" />
+                <ScalarProperty Name="direccion" ColumnName="direccion" />
+                <ScalarProperty Name="fecha_nacimiento" ColumnName="fecha_nacimiento" />
+                <ScalarProperty Name="telefono" ColumnName="telefono" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="categoria" ColumnName="categoria" />
+                <ScalarProperty Name="tipo_persona" ColumnName="tipo_persona" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Producto">
+            <EntityTypeMapping TypeName="FACTURA_EJEMPLOModel.Producto">
+              <MappingFragment StoreEntitySet="Producto">
+                <ScalarProperty Name="idProducto" ColumnName="idProducto" />
+                <ScalarProperty Name="nombre" ColumnName="nombre" />
+                <ScalarProperty Name="precio" ColumnName="precio" />
+                <ScalarProperty Name="stock" ColumnName="stock" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="sp_InsertPersonaFiscal" FunctionName="FACTURA_EJEMPLOModel.Store.sp_InsertPersonaFiscal">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="FACTURA_EJEMPLOModel.sp_InsertPersonaFiscal_Result">
+                <ScalarProperty Name="NumeroError" ColumnName="NumeroError" />
+                <ScalarProperty Name="Mensaje" ColumnName="Mensaje" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_InsertFactura1" FunctionName="FACTURA_EJEMPLOModel.Store.sp_InsertFactura" />
+          <FunctionImportMapping FunctionImportName="sp_AgregarFactura" FunctionName="FACTURA_EJEMPLOModel.Store.sp_AgregarFactura" />
+          <FunctionImportMapping FunctionImportName="sp_ActualizaFactura" FunctionName="FACTURA_EJEMPLOModel.Store.sp_ActualizaFactura" />
+          <FunctionImportMapping FunctionImportName="sp_EliminaFactura" FunctionName="FACTURA_EJEMPLOModel.Store.sp_EliminaFactura" />
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Ninguno" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
